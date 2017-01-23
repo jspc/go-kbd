@@ -1,57 +1,59 @@
 package main
 
 import (
-    "fmt"
-    "io/ioutil"
-    "regexp"
-    "strings"
+	"fmt"
+	"io/ioutil"
+	"regexp"
+	"strings"
 )
 
 // K represents a keyboard
 type K struct {
-    // Proc contains a filename where one might find keyboard details. In proc, usually
-    // - this differs for testing and, potentially, different OSes
-    Proc string
+	// Proc contains a filename where one might find keyboard details. In proc, usually
+	// - this differs for testing and, potentially, different OSes
+	Proc string
 }
 
 var (
-    bitMask = "120013"
-    procDefaultString = "/proc/bus/input/devices"
+	bitMask           = "120013"
+	procDefaultString = "/proc/bus/input/devices"
 
-    i int
-    l string
+	i int
+	l string
 )
 
 func NewK() (k K) {
-    k.Proc = procDefaultString
+	k.Proc = procDefaultString
 
-    return
+	return
 }
 
-func (k K)Lookup() (d string, err error) {
-    var proc []byte
+func (k K) Lookup() (d string, err error) {
+	var proc []byte
 
-    proc, err = ioutil.ReadFile(k.Proc)
-    if err != nil {
-        return
-    }
+	proc, err = ioutil.ReadFile(k.Proc)
+	if err != nil {
+		return
+	}
 
-    procSplit := strings.Split( string(proc), "\n")
-    for i,l = range procSplit {
-        if strings.Contains(l, fmt.Sprintf("EV=%s", bitMask)) {break}
-    }
+	procSplit := strings.Split(string(proc), "\n")
+	for i, l = range procSplit {
+		if strings.Contains(l, fmt.Sprintf("EV=%s", bitMask)) {
+			break
+		}
+	}
 
-    for c:=i; c>0; c-- {
-        l = procSplit[c]
-        if l == "" {
-            err = fmt.Errorf("Could not find a device ID for EV=%s", bitMask)
-            return
-        }
-        if strings.Contains(l, "Handlers=") {
-            r, _ := regexp.Compile("event[0-9]+")
-            d = r.FindStringSubmatch(l)[0]
-            break
-        }
-    }
-    return
+	for c := i; c > 0; c-- {
+		l = procSplit[c]
+		if l == "" {
+			err = fmt.Errorf("Could not find a device ID for EV=%s", bitMask)
+			return
+		}
+		if strings.Contains(l, "Handlers=") {
+			r, _ := regexp.Compile("event[0-9]+")
+			d = r.FindStringSubmatch(l)[0]
+			break
+		}
+	}
+	return
 }
