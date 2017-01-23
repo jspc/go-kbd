@@ -11,8 +11,13 @@ type Event interface {
 	String() string
 }
 
+var (
+	scanCode uint16
+)
+
 func main() {
-	kbdEvent, err := NewK().Lookup()
+	keyboard := NewK("iso9995")
+	kbdEvent, err := keyboard.Lookup()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -28,19 +33,37 @@ func main() {
 
 	log.Println(dev)
 
-	for i := 0; i >= 0; i++ {
+	for {
 		ievent, err := dev.ReadOne()
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		if ievent.Type == 1 && ievent.Value == 1 {
+		if ievent.Type == 1 {
 			kevent := evdev.NewKeyEvent(ievent)
-			log.Println(kevent.Scancode)
+			scanCode = kevent.Scancode
+
+			if ievent.Value == 0 {
+				switch {
+				case scanCode == keyboard.Mapper.LeftShift || scanCode == keyboard.Mapper.RightShift:
+					keyboard.Mapper.ShiftOff()
+				case scanCode == keyboard.Mapper.Alt || scanCode == keyboard.Mapper.AltGr:
+					keyboard.Mapper.AltOff()
+				}
+			}
+
+			if ievent.Value == 1 {
+				switch {
+				case scanCode == keyboard.Mapper.LeftShift || scanCode == keyboard.Mapper.RightShift:
+					keyboard.Mapper.ShiftOn()
+				case scanCode == keyboard.Mapper.Alt || scanCode == keyboard.Mapper.AltGr:
+					keyboard.Mapper.AltOn()
+				case scanCode == keyboard.Mapper.CapsLock:
+					keyboard.Mapper.CapsLockFlip()
+				default:
+					keyboard.Mapper.Print(scanCode)
+				}
+			}
 		}
 	}
-}
-
-func KBLog(eventID int, e Event) {
-	log.Printf("[%d] -> %s", eventID, e.String())
 }
