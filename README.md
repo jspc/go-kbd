@@ -1,6 +1,9 @@
 go-kbd
 ==
 
+`go-kbd` is a simple keyboard logging library for linux. It exists merely to demonstrate systems programming in go.
+
+
 | who       | what |
 |-----------|------|
 | dockerhub | https://hub.docker.com/r/jspc/go-kbd/   |
@@ -32,4 +35,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
