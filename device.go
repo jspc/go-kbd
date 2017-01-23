@@ -11,7 +11,8 @@ import (
 type K struct {
 	// Proc contains a filename where one might find keyboard details. In proc, usually
 	// - this differs for testing and, potentially, different OSes
-	Proc string
+	Proc   string
+	Mapper Mapper
 }
 
 var (
@@ -20,10 +21,18 @@ var (
 
 	i int
 	l string
+
+	mm MapManager
 )
 
-func NewK() (k K) {
+func NewK(t string) (k K) {
+	switch t {
+	case "iso9995":
+		mm = NewISO9995()
+	}
+
 	k.Proc = procDefaultString
+	k.Mapper = NewMapper(mm)
 
 	return
 }
