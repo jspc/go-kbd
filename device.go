@@ -11,8 +11,14 @@ import (
 type K struct {
 	// Proc contains a filename where one might find keyboard details. In proc, usually
 	// - this differs for testing and, potentially, different OSes
-	Proc   string
-	Mapper Mapper
+	Proc string
+
+	Caps     bool
+	Shifted  bool
+	Alted    bool
+	Mappings []Mapping
+
+	LeftShift, RightShift, Alt, AltGr, CapsLock uint16
 }
 
 var (
@@ -32,12 +38,23 @@ func NewK(t string) (k K) {
 	}
 
 	k.Proc = procDefaultString
-	k.Mapper = NewMapper(mm)
+
+	// TODO: How would one ensure these *are* false at start up?
+	k.Caps = false
+	k.Shifted = false
+	k.Alted = false
+
+	k.Mappings = mm.Mappings()
+	k.LeftShift = mm.LeftShift()
+	k.RightShift = mm.RightShift()
+	k.Alt = mm.Alt()
+	k.AltGr = mm.AltGr()
+	k.CapsLock = mm.CapsLock()
 
 	return
 }
 
-func (k K) Lookup() (d string, err error) {
+func (k K) Path() (d string, err error) {
 	var proc []byte
 
 	proc, err = ioutil.ReadFile(k.Proc)
@@ -64,5 +81,7 @@ func (k K) Lookup() (d string, err error) {
 			break
 		}
 	}
+
+	d = fmt.Sprintf("/dev/input/%s", d)
 	return
 }

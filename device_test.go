@@ -5,21 +5,21 @@ import (
 )
 
 func TestNewK(t *testing.T) {
-	k := NewK()
+	k := NewK("iso9995")
 	if k.Proc != "/proc/bus/input/devices" {
 		t.Errorf("NewK() error: expected '/proc/bus/input/devices', received %q", k.Proc)
 	}
 }
 
 func TestKBLookup(t *testing.T) {
-	k := K{"./fixtures/devices"}
+	k := K{"./fixtures/devices", false, false, false, []Mapping{}, 0, 0, 0, 0, 0}
 
-	kbd, err := k.Lookup()
+	kbd, err := k.Path()
 	if err != nil {
 		t.Errorf("Lookup() error: %q", err)
 	}
 
-	if kbd != "event4" {
+	if kbd != "/dev/input/event4" {
 		t.Errorf("Lookup() error: expected 'event4', received %q", kbd)
 	}
 }

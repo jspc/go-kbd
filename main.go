@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 
 	evdev "github.com/gvalkov/golang-evdev"
@@ -17,12 +16,10 @@ var (
 
 func main() {
 	keyboard := NewK("iso9995")
-	kbdEvent, err := keyboard.Lookup()
+	kbd, err := keyboard.Path()
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	kbd := fmt.Sprintf("/dev/input/%s", kbdEvent)
 
 	log.Println(kbd)
 
@@ -45,23 +42,23 @@ func main() {
 
 			if ievent.Value == 0 {
 				switch {
-				case scanCode == keyboard.Mapper.LeftShift || scanCode == keyboard.Mapper.RightShift:
-					keyboard.Mapper.ShiftOff()
-				case scanCode == keyboard.Mapper.Alt || scanCode == keyboard.Mapper.AltGr:
-					keyboard.Mapper.AltOff()
+				case scanCode == keyboard.LeftShift || scanCode == keyboard.RightShift:
+					keyboard.ShiftOff()
+				case scanCode == keyboard.Alt || scanCode == keyboard.AltGr:
+					keyboard.AltOff()
 				}
 			}
 
 			if ievent.Value == 1 {
 				switch {
-				case scanCode == keyboard.Mapper.LeftShift || scanCode == keyboard.Mapper.RightShift:
-					keyboard.Mapper.ShiftOn()
-				case scanCode == keyboard.Mapper.Alt || scanCode == keyboard.Mapper.AltGr:
-					keyboard.Mapper.AltOn()
-				case scanCode == keyboard.Mapper.CapsLock:
-					keyboard.Mapper.CapsLockFlip()
+				case scanCode == keyboard.LeftShift || scanCode == keyboard.RightShift:
+					keyboard.ShiftOn()
+				case scanCode == keyboard.Alt || scanCode == keyboard.AltGr:
+					keyboard.AltOn()
+				case scanCode == keyboard.CapsLock:
+					keyboard.CapsLockFlip()
 				default:
-					keyboard.Mapper.Print(scanCode)
+					keyboard.Print(scanCode)
 				}
 			}
 		}
