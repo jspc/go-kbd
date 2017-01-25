@@ -1,0 +1,20 @@
+language: go
+
+sudo: required
+
+go:
+  - 1.7.4
+  - tip
+
+before_install:
+  - sudo apt-get -qq update
+  - sudo apt-get install -y libxml2-dev build-essential
+
+script:
+  - go test -cpu=1,2 -v -tags integration ./...
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
+
+notifications:
+  email: false
