@@ -19,16 +19,6 @@ func (m Mapping) Empty() bool {
 	return m == Mapping{}
 }
 
-// Mapper contains logic for mapping codes to keys
-type Mapper struct {
-	Caps     bool
-	Shifted  bool
-	Alted    bool
-	Mappings []Mapping
-
-	LeftShift, RightShift, Alt, AltGr, CapsLock uint16
-}
-
 // MapManager contains a direct translation of Scancodes to keys
 type MapManager interface {
 	Mappings() []Mapping
@@ -39,40 +29,23 @@ type MapManager interface {
 	AltGr() uint16
 }
 
-// NewMapper returns a Mapper for mapping presses to values
-func NewMapper(mm MapManager) (m Mapper) {
-	// TODO: How would one ensure these *are* false at start up?
-	m.Caps = false
-	m.Shifted = false
-	m.Alted = false
-
-	m.Mappings = mm.Mappings()
-	m.LeftShift = mm.LeftShift()
-	m.RightShift = mm.RightShift()
-	m.Alt = mm.Alt()
-	m.AltGr = mm.AltGr()
-	m.CapsLock = mm.CapsLock()
-
-	return
-}
-
-func (m *Mapper) ShiftOn() {
+func (m *K) ShiftOn() {
 	m.Shifted = true
 }
 
-func (m *Mapper) ShiftOff() {
+func (m *K) ShiftOff() {
 	m.Shifted = false
 }
 
-func (m *Mapper) AltOn() {
+func (m *K) AltOn() {
 	m.Alted = true
 }
 
-func (m *Mapper) AltOff() {
+func (m *K) AltOff() {
 	m.Alted = false
 }
 
-func (m *Mapper) CapsLockFlip() {
+func (m *K) CapsLockFlip() {
 	if m.Caps {
 		m.Caps = false
 	} else {
@@ -80,7 +53,7 @@ func (m *Mapper) CapsLockFlip() {
 	}
 }
 
-func (m Mapper) Print(sc uint16) {
+func (m K) Print(sc uint16) {
 	var output string
 	mappedCode := m.Mappings[int(sc)]
 
